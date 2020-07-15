@@ -10,7 +10,7 @@
     ==
 ::
 +$  state-0
-    $:  [%0 monitored=(set resource)]
+    $:  [%0 monitored=(set resource) interval=@dr]
     ==
 ::
 +$  card  card:agent:gall
@@ -19,9 +19,11 @@
 %-  agent:dbug
 =|  state=versioned-state
 ^-  agent:gall
+=<
 |_  =bowl:gall
-+*  this      .
++*  this  .
     def   ~(. (default-agent this %|) bowl)
+    hc    ~(. +> bowl)
 ::
 ++  on-init
   ^-  (quip card _this)
@@ -49,11 +51,15 @@
     |=  =action:backy
     ^-  (quip card _state)
     ?-    -.action
-      %add-group
+        %add-group
       =/  rid=resource
         [entity.action app.action]
       ~&  >>>  "add-group: {<rid>}"
       `state(monitored (~(put in monitored.state) rid))
+      ::
+        %set-timer
+      =.  interval.state  interval.action
+      [~[set-timer:hc] state]
     ==
   --
 ::
@@ -61,6 +67,18 @@
 ++  on-leave  on-leave:def
 ++  on-peek   on-peek:def
 ++  on-agent  on-agent:def
-++  on-arvo   on-arvo:def
+++  on-arvo
+  |=  [=wire =sign-arvo]
+  ^-  (quip card _this)
+  ?:  ?=([%timer ~] wire)
+    ~&  >>  "timer dinged after {<interval.state>}"
+    `this
+::    [~[set-timer:hc] this]
+  (on-arvo:def wire sign-arvo)
 ++  on-fail   on-fail:def
+--
+|_  =bowl:gall
+++  set-timer
+  ^-  card
+  [%pass /timer %arvo %b %wait (add now.bowl interval.state)]
 --
