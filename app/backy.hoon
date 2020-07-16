@@ -60,6 +60,10 @@
         %set-timer
       =.  interval.state  interval.action
       [~[set-timer:hc] state]
+      ::
+        %write
+      :_  state
+      [(write-file:hc pax.action txt+!>(lines.action))]~
     ==
   --
 ::
@@ -74,6 +78,9 @@
     ~&  >>  "timer dinged after {<interval.state>}"
     `this
 ::    [~[set-timer:hc] this]
+  ?:  ?=([%write *] wire)
+    ~&  >>  "got write file signal on {<+.wire>}"
+    `this
   (on-arvo:def wire sign-arvo)
 ++  on-fail   on-fail:def
 --
@@ -81,4 +88,14 @@
 ++  set-timer
   ^-  card
   [%pass /timer %arvo %b %wait (add now.bowl interval.state)]
+++  write-file
+  |=  [pax=path cay=cage]
+  ^-  card
+  ~&  >>>  our-beak
+  =.  pax  (weld our-beak pax)
+  [%pass (weld /write pax) %arvo %c %info (foal:space:userlib pax cay)]
+++  our-beak
+  ^-  path
+  =*  b  byk.bowl
+  ~[(scot %p p.b) q.b (scot %da p.r.b)]
 --
