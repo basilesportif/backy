@@ -10,7 +10,10 @@
     ==
 ::
 +$  state-0
-    $:  [%0 monitored=(set resource) interval=@dr]
+    $:  %0
+        monitored=(set resource)
+        interval=@dr
+        timer=@da
     ==
 ::
 +$  card  card:agent:gall
@@ -57,43 +60,66 @@
       ~&  >>>  "add-group: {<rid>}"
       `state(monitored (~(put in monitored.state) rid))
       ::
-        %set-timer
-      =.  interval.state  interval.action
-      [~[set-timer:hc] state]
+      ::  cancel the old timer if it's in the future
       ::
-        %write
+        %set-timer
+      =/  old-timer  timer.state
+      =.  interval.state  interval.action
+      =.  timer.state  (add now.bowl interval.state)
       :_  state
-      [(write-file:hc pax.action txt+!>(lines.action))]~
+      ?:  (lth old-timer now.bowl)
+        ~[start-timer]
+      :~  (cancel-timer old-timer)
+        start-timer
+      ==
+      ::
+        %cancel-timer
+      :_  state
+      ~[(cancel-timer timer.state)]
+      ::
+        %write-users
+      :_  state
+      [(write-file:hc pax.action txt+!>(users.action))]~
     ==
+  ++  start-timer
+    ^-  card
+    [%pass /timer %arvo %b %wait timer.state]
+  ++  cancel-timer
+    |=  timer=@da
+    ^-  card
+    ~&  >>>  "timer cancelled"
+    [%pass /timer %arvo %b %rest timer]
   --
 ::
+++  on-arvo
+  |=  [=wire =sign-arvo]
+  ^-  (quip card _this)
+  ?+    wire  (on-arvo:def wire sign-arvo)
+      [%timer ~]
+    ~&  >>  "timer dinged after {<interval.state>}"
+    :_  this
+    ~[[%pass /self %agent [our.bowl %backy] %poke backy-action+!>([%set-timer interval.state])]]
+    ::
+      [%cancel-timer ~]
+    `this
+    ::
+      [%write-users *]
+    ~&  >>  "got write file signal on {<+.wire>}"
+    `this
+  ==
 ++  on-watch  on-watch:def
 ++  on-leave  on-leave:def
 ++  on-peek   on-peek:def
 ++  on-agent  on-agent:def
-++  on-arvo
-  |=  [=wire =sign-arvo]
-  ^-  (quip card _this)
-  ?:  ?=([%timer ~] wire)
-    ~&  >>  "timer dinged after {<interval.state>}"
-    `this
-::    [~[set-timer:hc] this]
-  ?:  ?=([%write *] wire)
-    ~&  >>  "got write file signal on {<+.wire>}"
-    `this
-  (on-arvo:def wire sign-arvo)
 ++  on-fail   on-fail:def
 --
 |_  =bowl:gall
-++  set-timer
-  ^-  card
-  [%pass /timer %arvo %b %wait (add now.bowl interval.state)]
 ++  write-file
   |=  [pax=path cay=cage]
   ^-  card
   ~&  >>>  our-beak
   =.  pax  (weld our-beak pax)
-  [%pass (weld /write pax) %arvo %c %info (foal:space:userlib pax cay)]
+  [%pass (weld /write-users pax) %arvo %c %info (foal:space:userlib pax cay)]
 ++  our-beak
   ^-  path
   =*  b  byk.bowl
