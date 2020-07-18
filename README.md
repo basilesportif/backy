@@ -5,7 +5,7 @@
 *TODO* for `~timluc`: clean up the various actions and start everything `on-init`.
 
 ## Purpose
-A Gall app that runs like a chron job in the background to back up the members of specified groups.  If your ship is mounted to Unix, it will spit out text files for each group in Unix under `$PIER_DIR/bak-groups`.
+A Gall app that runs like a chron job in the background to back up the members of specified groups.  If your ship is mounted to Unix, it will spit out text files for each group in Unix under `$PIER_DIR/bak-groups`. This is great for restoring users after a breach.
 
 ## Installation
 * make sure your `home` is mounted
