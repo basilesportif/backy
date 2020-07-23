@@ -20,18 +20,22 @@
 ::
 --
 %-  agent:dbug
-=|  state=versioned-state
+=|  state-0
+=*  state  -
 ^-  agent:gall
 =<
 |_  =bowl:gall
 +*  this  .
     def   ~(. (default-agent this %|) bowl)
     hc    ~(. +> bowl)
+    grp   ~(. group-lib bowl)
 ::
 ++  on-init
   ^-  (quip card _this)
   ~&  >  '%backy initialized successfully'
-  `this
+  =.  interval.state  ~m5
+  :_  this
+  ~[[reset-timer:hc]]
 ++  on-save
   ^-  vase
   !>(state)
@@ -43,6 +47,7 @@
 ++  on-poke
   |=  [=mark =vase]
   ^-  (quip card _this)
+  ?>  (team:title our.bowl src.bowl)
   |^
   =^  cards  state
     ?+    mark  (on-poke:def mark vase)
@@ -55,23 +60,11 @@
     ^-  (quip card _state)
     ?-    -.action
         %add-group
-      =/  rid=resource
-        [entity.action app.action]
-      ~&  >>>  "add-group: {<rid>}"
-      `state(monitored (~(put in monitored.state) rid))
-      ::
+      (add-group [entity.action app.action])
       ::  cancel the old timer if it's in the future
       ::
-        %set-timer
-      =/  old-timer  timer.state
-      =.  interval.state  interval.action
-      =.  timer.state  (add now.bowl interval.state)
-      :_  state
-      ?:  (lth old-timer now.bowl)
-        ~[start-timer]
-      :~  (cancel-timer old-timer)
-        start-timer
-      ==
+        %alter-timer
+      (alter-timer interval.action)
       ::
         %cancel-timer
       :_  state
@@ -80,6 +73,28 @@
         %write-users
       :_  state
       write-users:hc
+    ==
+  ::  only add the group if it exists in group-store
+  ::  
+  ++  add-group
+    |=  rid=resource
+    ^-  (quip card _state)
+    ~|  "group {<rid>} doesn't exist"
+    ?<  ?=(~ (scry-group:grp rid))
+    ~&  >>  "%backy is now monitoring group: {<rid>}"
+    `state(monitored (~(put in monitored.state) rid))
+  ++  alter-timer
+    |=  interval=_interval.state
+    ^-  (quip card _state)
+    =/  old-timer  timer.state
+    =.  interval.state  interval
+    =.  timer.state  (add now.bowl interval.state)
+    :_  state
+    ?:  (lth old-timer now.bowl)
+      ~[start-timer]
+    :~
+      (cancel-timer old-timer)
+      start-timer
     ==
   ++  start-timer
     ^-  card
@@ -94,22 +109,14 @@
 ++  on-arvo
   |=  [=wire =sign-arvo]
   ^-  (quip card _this)
-  |^
   ?+    wire  (on-arvo:def wire sign-arvo)
   ::  canceling a timer doesn't send an on-arvo message
       [%timer ~]
-    ~&  >>  "timer dinged after {<interval.state>}"
+    ~&  >>  "%backy: writing backups"
     :_  this
-    [reset-timer write-users:hc]
+    [reset-timer:hc write-users:hc]
     ::
-      [%write-users *]
-    ~&  >>  "got write file signal on {<+.wire>} "
-    `this
   ==
-  ++  reset-timer
-    ^-  card
-    [%pass /self %agent [our.bowl %backy] %poke backy-action+!>([%set-timer interval.state])]
-  --
 ++  on-watch  on-watch:def
 ++  on-leave  on-leave:def
 ++  on-peek   on-peek:def
@@ -118,6 +125,9 @@
 --
 |_  =bowl:gall
 +*  grp   ~(. group-lib bowl)
+++  reset-timer
+  ^-  card
+  [%pass /self %agent [our.bowl %backy] %poke backy-action+!>([%alter-timer interval.state])]
 ++  write-users
   ^-  (list card)
   =/  gis=(list [path wain])
