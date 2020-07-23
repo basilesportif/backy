@@ -9,19 +9,21 @@ A Gall app that runs like a chron job in the background to back up the members o
 
 *THEN*
 * run `./install.sh $PIER_DIR`
-OR
+
+*OR*
+
 * copy `app/backy.hoon` to `/app`
 * copy `sur/backy.hoon` to `/sur`
 * copy `/mar/backy/action.hoon` to `/mar/backy`
 
-Then
+THEN
 ```
 |commit %home
 |start %backy
 :backy &backy-action [%add-group [~GROUP-SHIP %GROUP-NAME]]
 ```
 
-The `%add-group` action adds groups whose members you want to back up to disk.
+The `%add-group` action adds groups whose members you want to back up to disk. e.g. `[%add-group ~timluc-miptev %cool-group]`
 
 ### Changing Backup Frequency
 By default, `%backy` backs up data every 5 minutes. You can use the `%alter-timer` action to adjust this.
