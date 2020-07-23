@@ -9,6 +9,7 @@ A Gall app that runs like a chron job in the background to back up the members o
 
 *THEN*
 * run `./install.sh $PIER_DIR`
+  - `$PIER_DIR` will be like `~/timluc-miptev/home`
 
 *OR*
 
