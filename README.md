@@ -24,7 +24,9 @@ THEN
 :backy &backy-action [%add-group [~GROUP-SHIP %GROUP-NAME]]
 ```
 
-The `%add-group` action adds groups whose members you want to back up to disk. e.g. `[%add-group ~timluc-miptev %cool-group]`
+The `%add-group` action adds groups whose members you want to back up to disk. e.g. `[%add-group ~timluc-miptev %cool-group]`.
+
+Whenever a new group is added, all monitored groups are re-written to disk.
 
 ### Changing Backup Frequency
 By default, `%backy` backs up data every 5 minutes. You can use the `%alter-timer` action to adjust this.
@@ -32,6 +34,3 @@ By default, `%backy` backs up data every 5 minutes. You can use the `%alter-time
 ::  example time values: ~s20, ~m10, ~h2
 :backy &backy-action [%alter-timer ~m5]
 ```
-
-### Other Actions
-The observant source code reader may notice other actions in `/sur/backy.hoon`. Those all work, but are for educational purposes in a separate tutorial, and aren't needed to run the app.
