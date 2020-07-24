@@ -147,7 +147,7 @@
   =/  cay=cage
     txt+!>(lines)
   =.  pax  (weld our-beak pax)
-  [%pass (weld /write-users pax) %arvo %c %info (foal:space:userlib pax cay)]
+  [%pass /write-users %arvo %c %info (foal:space:userlib pax cay)]
 ++  our-beak
   ^-  path
   =*  b  byk.bowl
