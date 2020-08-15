@@ -125,7 +125,7 @@
     %~  tap  in
     ^-  (set [path wain])
     (~(run in monitored.state) group-info)
-  (turn gis write-file)
+  (murn gis write-file)
 ++  group-info
   |=  rid=resource
   ^-  [path wain]
@@ -143,13 +143,29 @@
   [file-path users]
 ++  write-file
   |=  [pax=path lines=wain]
+  ^-  (unit card)
+  =/  curr-lines=(unit wain)
+    (lines-in-file pax)
+  ?~  curr-lines
+    `(write-lines pax lines)
+  ?:  =((sy lines) (sy u.curr-lines))
+  ~&  >>  "No new users at {<pax>}"
+    ~
+  `(write-lines pax lines)
+++  write-lines
+  |=  [pax=path lines=wain]
   ^-  card
-  =/  cay=cage
-    txt+!>(lines)
+  =/  cay=cage  txt+!>(lines)
   =.  pax  (weld our-beak pax)
   [%pass /write-users %arvo %c %info (foal:space:userlib pax cay)]
+++  lines-in-file
+  |=  pax=path
+  ^-  (unit wain)
+  =/  p=path  (weld our-beak pax)
+  ?:  .^(? %cu p)
+    [~ .^(wain %cx p)]
+  ~
 ++  our-beak
   ^-  path
-  =*  b  byk.bowl
-  ~[(scot %p p.b) q.b (scot %da p.r.b)]
+  ~[(scot %p our.bowl) %home (scot %da now.bowl)]
 --
