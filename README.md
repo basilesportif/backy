@@ -28,6 +28,12 @@ The `%add-group` action adds groups whose members you want to back up to disk. e
 
 Whenever a new group is added, all monitored groups are re-written to disk.
 
+### Live Code Reload
+If you want to watch the code directories and copy them to their ship as they are modified:
+```
+./install.sh -w $PIER_DIR
+```
+
 ### Changing Backup Frequency
 By default, `%backy` backs up data every 5 minutes. You can use the `%alter-timer` action to adjust this.
 ```
